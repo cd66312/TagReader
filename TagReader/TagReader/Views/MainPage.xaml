@@ -1,0 +1,92 @@
+<Page x:Class="TagReader.Views.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
+      xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
+      xmlns:controls="using:Template10.Controls"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="using:TagReader.Views"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:vm="using:TagReader.ViewModels"
+      mc:Ignorable="d">
+
+    <Page.DataContext>
+        <vm:MainPageViewModel x:Name="ViewModel" />
+    </Page.DataContext>
+    <Grid Width="1280" Height="720" BorderBrush="LightGray" BorderThickness="3">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="640"/>
+            <RowDefinition Height="74"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" x:Name="cReadCycles"/>
+                <ColumnDefinition Width="*" x:Name="cCycleDetails"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Read Cycle" FontSize="20" HorizontalAlignment="Center" Grid.Row="0" Grid.Column="0" x:Name="tbReadCycles"/>
+            <ScrollViewer  Grid.Row="1" Grid.Column="0">
+                <ListView ItemsSource="{Binding ReadStack}" SelectedIndex="{Binding PageModel.SelectedReadStack, Mode=TwoWay}" SelectionChanged="{x:Bind ViewModel.ReadStack_SelectionChanged}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Width="{Binding ElementName=cReadCycles, Path=ActualWidth}" >
+                                <StackPanel Orientation="Vertical">
+                                    <Grid>
+                                        <TextBlock Text="Tags in Cycle" HorizontalAlignment="Left"/>
+                                        <TextBlock Text="{Binding Count}" Margin="0,0,25,0" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                    <Grid>
+                                        <TextBlock Text="Duration" HorizontalAlignment="Left"/>
+                                        <TextBlock Text="{Binding Duration}" Margin="0,0,25,0"  HorizontalAlignment="Right"/>
+                                    </Grid>
+
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </ScrollViewer>
+
+            <TextBlock Text="Cycle Details" FontSize="20" HorizontalAlignment="Center" Grid.Row="0" Grid.Column="1" x:Name="tbCycleDetails"/>
+            <ScrollViewer Grid.Row="1" Grid.Column="1">
+                <ListView ItemsSource="{Binding ReadStackTags}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <!--<RelativePanel>
+                                        <TextBlock Text="{Binding TagID}" RelativePanel.AlignLeftWithPanel="True"/>
+                                        <TextBlock Text="{Binding TagReads}" RelativePanel.AlignRightWithPanel="True"/>
+                                    </RelativePanel>-->
+                            <Grid Width="{Binding ElementName=cCycleDetails, Path=ActualWidth}" >
+                                <TextBlock Text="{Binding TagID}" HorizontalAlignment="Left"/>
+                                <TextBlock Text="{Binding TagReads}" Margin="0,0,25,0" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </ScrollViewer>
+
+
+        </Grid>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Height="70">
+            <Button Content="Start" Click="{x:Bind ViewModel.btnStart_Click}"/>
+            <Button Content="Stop" Click="{x:Bind ViewModel.btnStop_Click}" Margin="25,0,25,0"/>
+            <Button Content="Reset" Click="{x:Bind ViewModel.btnReset_Click}"/>
+
+            <!--<Button Content="Line Feed" Click="{x:Bind ViewModel.btnLineFeed_Click}" />-->
+        </StackPanel>
+
+                
+        <TextBlock Text="{Binding PageModel.RFIDStatus}" HorizontalAlignment="Right" Grid.Row="1" VerticalAlignment="Center" Margin="0,0,20,0"/>
+
+    </Grid>
+
+
+</Page>
+
