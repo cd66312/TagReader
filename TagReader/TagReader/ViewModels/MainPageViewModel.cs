@@ -17,7 +17,10 @@ namespace TagReader.ViewModels
         public MainPageModel PageModel { get; set; } = new MainPageModel();
         public ObservableCollection<MainPageModel.ReadStack> ReadStack { get; set; } = new ObservableCollection<MainPageModel.ReadStack>();
         public ObservableCollection<MainPageModel.ReadStackTag> ReadStackTags { get; set; } = new ObservableCollection<MainPageModel.ReadStackTag>();
-        
+
+
+        public List<string> debug;
+
         private bool reading = false;
         private MainPageModel.ReadStack readStackInProgress = null;
         public List<string> ReaderOutput { get; set; } = new List<string>();
@@ -36,6 +39,8 @@ namespace TagReader.ViewModels
 
         private async void ReaderComs_LineReadEvent(object sender, string e)
         {
+
+            //debug.Add(e);
 
             // checking first to see if these were connection messages
             if (e == "ReaderConnected")
@@ -61,77 +66,88 @@ namespace TagReader.ViewModels
 
         private void readerDataRecord(string s)
         {
-            // log it to the GUI
-            if (s.Contains("tags>")) // this is the end of a readstackobject
+            try
             {
-                // ok, irrelevant datas, but need to compile what we have captured as a readstackobject
-                ReadStack.Add(readStackInProgress);
-                // reset our readstackstrings
-                readStackInProgress = null;
-            }
-            else
-            {
-                if (s.Contains("tag")) // gotta make sure this isn't irrelavent datas
+                // log it to the GUI
+                if (s.Contains("tags>") && readStackInProgress.Count != null) // this is the end of a readstackobject
                 {
-                    if (s.Contains("<tags list")) // this is the start of a new readstackobject
+                    // ok, irrelevant datas, but need to compile what we have captured as a readstackobject
+                    ReadStack.Add(readStackInProgress);
+                    // reset our readstackstrings
+                    readStackInProgress = null;
+                }
+                else
+                {
+                    if (s.Contains("tag")) // gotta make sure this isn't irrelavent datas
                     {
-                        // create our new readstackinprogress object
-                        readStackInProgress = new MainPageModel.ReadStack();
+                        if (s.Contains("<tags list")) // this is the start of a new readstackobject
+                        {
+                            // create our new readstackinprogress object
+                            readStackInProgress = new MainPageModel.ReadStack();
 
-                        try
-                        {
-                            var datas = s.Split('"');
-                            readStackInProgress.Count = datas[5];
-                            readStackInProgress.Duration = datas[9];
-                        }
-                        catch
-                        {
-                            // this is just here for debugging purposes, i see no reason that it should ever catch, but, permanent breakpoint here in case
-                            if (readStackInProgress.Count == null)
-                            {
-                                readStackInProgress.Count = "Error";
-                                readStackInProgress.Duration = "Error";
-                            }
-                            else { readStackInProgress.Duration = "Error"; }
-                        }
-                    }
-                    else // ok, we know this is relevant datas, it must be a tag summary
-                    {
-                        // double check though, even though this statement should never fail
-                        if (s.Contains("tag oid"))
-                        {
-                            var tag = new MainPageModel.ReadStackTag();
                             try
                             {
                                 var datas = s.Split('"');
-                                tag.TagID = datas[1];
-                                tag.TagReads = datas[3];
-                                tag.Antennas = datas[9];
+                                readStackInProgress.Count = datas[5];
+                                readStackInProgress.Duration = datas[9];
                             }
                             catch
                             {
-                                // again, should never get here, but if so, lets take care of it
-                                if (tag.TagID == null)
+                                // this is just here for debugging purposes, i see no reason that it should ever catch, but, permanent breakpoint here in case
+                                if (readStackInProgress.Count == null)
                                 {
-                                    tag.TagID = "Error";
-                                    tag.TagReads = "Error";
-                                    tag.Antennas = "Error";
+                                    readStackInProgress.Count = "Error";
+                                    readStackInProgress.Duration = "Error";
                                 }
-                                else if (tag.TagReads == null)
+                                else { readStackInProgress.Duration = "Error"; }
+                            }
+                        }
+                        else // ok, we know this is relevant datas, it must be a tag summary
+                        {
+                            // double check though, even though this statement should never fail
+                            if (s.Contains("tag oid"))
+                            {
+                                var tag = new MainPageModel.ReadStackTag();
+                                try
                                 {
-                                    tag.TagReads = "Error";
-                                    tag.Antennas = "Error";
+                                    var datas = s.Split('"');
+                                    tag.TagID = datas[1];
+                                    tag.TagReads = datas[3];
+                                    tag.Antennas = datas[9];
                                 }
-                                else
+                                catch
                                 {
-                                    tag.Antennas = "Error";
+                                    // again, should never get here, but if so, lets take care of it
+                                    if (tag.TagID == null)
+                                    {
+                                        tag.TagID = "Error";
+                                        tag.TagReads = "Error";
+                                        tag.Antennas = "Error";
+                                    }
+                                    else if (tag.TagReads == null)
+                                    {
+                                        tag.TagReads = "Error";
+                                        tag.Antennas = "Error";
+                                    }
+                                    else
+                                    {
+                                        tag.Antennas = "Error";
+                                    }
+                                }
+                                if (readStackInProgress != null)
+                                {
+                                    readStackInProgress.Tags.Add(tag);
                                 }
                             }
-                            readStackInProgress.Tags.Add(tag);
                         }
                     }
                 }
             }
+            catch (Exception e)
+            {
+
+            }
+
         }
         
 

@@ -13,10 +13,10 @@
     <Page.DataContext>
         <vm:MainPageViewModel x:Name="ViewModel" />
     </Page.DataContext>
-    <Grid Width="1280" Height="720" BorderBrush="LightGray" BorderThickness="3">
+    <Grid Width="1200" Height="690" BorderBrush="LightGray" BorderThickness="3" Margin="25">
         <Grid.RowDefinitions>
-            <RowDefinition Height="640"/>
-            <RowDefinition Height="74"/>
+            <RowDefinition Height="600"/>
+            <RowDefinition Height="64"/>
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
@@ -74,9 +74,9 @@
 
         </Grid>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Height="70">
-            <Button Content="Start" Click="{x:Bind ViewModel.btnStart_Click}"/>
-            <Button Content="Stop" Click="{x:Bind ViewModel.btnStop_Click}" Margin="25,0,25,0"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Height="60">
+            <Button Content="Start" Click="{x:Bind ViewModel.btnStart_Click}" IsEnabled="{Binding PageModel.btnStartEnabled}"/>
+            <Button Content="Stop" Click="{x:Bind ViewModel.btnStop_Click}" IsEnabled="{Binding PageModel.btnStopEnabled}" Margin="25,0,25,0"/>
             <Button Content="Reset" Click="{x:Bind ViewModel.btnReset_Click}"/>
 
             <!--<Button Content="Line Feed" Click="{x:Bind ViewModel.btnLineFeed_Click}" />-->
